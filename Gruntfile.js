@@ -3,13 +3,12 @@ var lrSnippet = require('grunt-contrib-livereload/lib/utils').livereloadSnippet;
 var mountFolder = function (connect, dir) {
     return connect.static(require('path').resolve(dir));
 };
-
+var sp2010rest = require('sp2010-rest');
 // # Globbing
 // for performance reasons we're only matching one level down:
 // 'test/spec/{,*/}*.js'
 // use this if you want to match all subfolders:
 // 'test/spec/**/*.js'
-// templateFramework: 'lodash'
 
 module.exports = function (grunt) {
     // load all grunt tasks
@@ -52,9 +51,12 @@ module.exports = function (grunt) {
                 tasks: ['jst']
             }
         },
+        livereload: {
+            port: 9345
+        },
         connect: {
             options: {
-                port: 9000,
+                port: 9234,
                 // change this to '0.0.0.0' to access the server from outside
                 hostname: 'localhost'
             },
@@ -63,6 +65,7 @@ module.exports = function (grunt) {
                     middleware: function (connect) {
                         return [
                             lrSnippet,
+                            sp2010rest(connect, 'lists'),
                             mountFolder(connect, '.tmp'),
                             mountFolder(connect, 'app')
                         ];
@@ -162,9 +165,6 @@ module.exports = function (grunt) {
                     // `name` and `out` is set by grunt-usemin
                     baseUrl: 'app/scripts',
                     optimize: 'none',
-                    paths: {
-                        'templates': '../../.tmp/scripts/templates'
-                    },
                     // TODO: Figure out how to make sourcemaps work with grunt-usemin
                     // https://github.com/yeoman/grunt-usemin/issues/30
                     //generateSourceMaps: true,
@@ -232,14 +232,6 @@ module.exports = function (grunt) {
             }
         },
         copy: {
-            defaultTemplate: {
-                files: [{
-                    expand: true,
-                    cwd: require('path').dirname(require.resolve('generator-backbone/app/templates/templates.js')),
-                    dest: '.tmp/scripts/',
-                    src: [ 'templates.js' ]
-                }]
-            },
             dist: {
                 files: [{
                     expand: true,
@@ -249,7 +241,8 @@ module.exports = function (grunt) {
                     src: [
                         '*.{ico,txt}',
                         '.htaccess',
-                        'images/{,*/}*.{webp,gif}'
+                        'images/{,*/}*.{webp,gif}',
+                        'scripts/vendor/**'
                     ]
                 }]
             }
@@ -281,7 +274,6 @@ module.exports = function (grunt) {
         grunt.task.run([
             'clean:server',
             'coffee:dist',
-            'copy:defaultTemplate',
             'jst',
             'compass:server',
             'livereload-start',
@@ -294,7 +286,6 @@ module.exports = function (grunt) {
     grunt.registerTask('test', [
         'clean:server',
         'coffee',
-        'copy:defaultTemplate',
         'jst',
         'compass',
         'connect:test',
@@ -304,7 +295,6 @@ module.exports = function (grunt) {
     grunt.registerTask('build', [
         'clean:dist',
         'coffee',
-        'copy:defaultTemplate',
         'jst',
         'compass:dist',
         'useminPrepare',
@@ -314,7 +304,7 @@ module.exports = function (grunt) {
         'concat',
         'cssmin',
         'uglify',
-        'copy:dist',
+        'copy',
         'usemin'
     ]);
 
