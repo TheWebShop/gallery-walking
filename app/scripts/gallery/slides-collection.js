@@ -8,8 +8,8 @@ define([
     'use strict';
 
     var SlidesCollection = Backbone.SP.List.extend({
-        site: '/msd/ewd/wellness',
-        list: 'WalkingChallenge',
+        site: '',
+        list: 'sdphotos',
         model: SlideModel
     });
 

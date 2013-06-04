@@ -10,10 +10,7 @@ require([
         main: '#main'
     });
 
-    App.gallery = new Gallery({
-        site: '/msd/ewd/wellness',
-        list: 'WalkingChallenge'
-    });
+    App.gallery = new Gallery();
 
     var myRouter = Marionette.AppRouter.extend({
         routes : {
